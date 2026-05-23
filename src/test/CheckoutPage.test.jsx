@@ -59,7 +59,7 @@ const mockCart = [
 
 describe('CheckoutPage', () => {
 
-  it('Cart items count header එකේ show වෙනවාද', async () => {
+  it('Show Cart items count in  header ', async () => {
     render(
       <MemoryRouter>
         <CheckoutPage cart={mockCart} loadCart={vi.fn()} />
@@ -69,7 +69,7 @@ describe('CheckoutPage', () => {
     expect(itemCount).toBeInTheDocument()
   })
 
-  it('Product name show වෙනවාද', async () => {
+  it('Show Product name ', async () => {
     render(
       <MemoryRouter>
         <CheckoutPage cart={mockCart} loadCart={vi.fn()} />
@@ -79,7 +79,7 @@ describe('CheckoutPage', () => {
     expect(productName).toBeInTheDocument()
   })
 
-  it('Payment summary show වෙනවාද', async () => {
+  it('Show Payment summary ', async () => {
     render(
       <MemoryRouter>
         <CheckoutPage cart={mockCart} loadCart={vi.fn()} />
@@ -89,7 +89,7 @@ describe('CheckoutPage', () => {
     expect(orderTotal).toBeInTheDocument()
   })
 
-  it('Delete button වැඩ කරනවාද', async () => {
+  it('Delete button ', async () => {
     const mockLoadCart = vi.fn()
     render(
       <MemoryRouter>
@@ -103,7 +103,7 @@ describe('CheckoutPage', () => {
     })
   })
 
-  it('Update button click කළාම Save button පෙනෙනවාද', async () => {
+  it('Update button click ', async () => {
     render(
       <MemoryRouter>
         <CheckoutPage cart={mockCart} loadCart={vi.fn()} />
@@ -115,7 +115,7 @@ describe('CheckoutPage', () => {
     expect(saveBtn).toBeInTheDocument()
   })
 
-  it('Place your order button show වෙනවාද', async () => {
+  it('Show Place your order button ', async () => {
     render(
       <MemoryRouter>
         <CheckoutPage cart={mockCart} loadCart={vi.fn()} />
@@ -125,7 +125,7 @@ describe('CheckoutPage', () => {
     expect(placeOrderBtn).toBeInTheDocument()
   })
 
-  it('Place your order click කළාම api call වෙනවාද', async () => {
+  it('api call for Place your order click ', async () => {
     const mockLoadCart = vi.fn()
     render(
       <MemoryRouter>
