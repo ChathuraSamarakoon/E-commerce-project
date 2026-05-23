@@ -5,29 +5,60 @@ import './CheckoutPage.css';
 import './checkout-header.css'
 import { formatMoney } from '../utils/money';
 
-export function CheckoutPage({ cart }) {
+export function CheckoutPage({ cart, loadCart }) {
 
     const [deliveryOptions, setDelivaryOptions] = useState([]);
     const [paymentSummary, setPaymentSummery] = useState(null);
+    const [editingQuantities, setEditingQuantities] = useState({});
+    const [newQuantities, setNewQuantities] = useState({});
 
+    const handleDeliveryOptionChange = async (productId, deliveryOptionId) => {
+        await axios.put(`/api/cart-items/${productId}`, {
+            deliveryOptionId: deliveryOptionId
+        });
+        loadCart();
+        const response = await axios.get('/api/payment-summary');
+        setPaymentSummery(response.data);
+    };
+
+    const handleUpdateClick = (cartItem) => {
+        setEditingQuantities(prev => ({ ...prev, [cartItem.productId]: true }));
+        setNewQuantities(prev => ({ ...prev, [cartItem.productId]: cartItem.quantity }));
+    };
+
+    const handleQuantityChange = (productId, value) => {
+        setNewQuantities(prev => ({ ...prev, [productId]: Number(value) }));
+    };
+
+    const handleQuantitySave = async (productId) => {
+        await axios.put(`/api/cart-items/${productId}`, {
+            quantity: newQuantities[productId]
+        });
+        await loadCart();
+        setEditingQuantities(prev => ({ ...prev, [productId]: false }));
+        const response = await axios.get('/api/payment-summary');
+        setPaymentSummery(response.data);
+    };
+
+    const placeOrder = async () => {
+        await axios.post('/api/orders');
+        await loadCart();
+        window.location.href = '/orders';
+    };
 
     useEffect(() => {
         const fetchCheckoutData = async () => {
-            let response =await axios.get('/api/delivery-options?expand=estimatedDeliveryTime')
+            let response = await axios.get('/api/delivery-options?expand=estimatedDeliveryTime')
             setDelivaryOptions(response.data)
-        
 
-            response= await axios.get('/api/payment-summary')
+            response = await axios.get('/api/payment-summary')
             setPaymentSummery(response.data)
-            
         }
         fetchCheckoutData()
-        
     }, [])
 
     return (
         <>
-
             <title>Checkout</title>
             <div className="checkout-header">
                 <div className="header-content">
@@ -40,7 +71,7 @@ export function CheckoutPage({ cart }) {
 
                     <div className="checkout-header-middle-section">
                         Checkout (<a className="return-to-home-link"
-                            href="/">3 items</a>)
+                            href="/">{cart.length} items</a>)
                     </div>
 
                     <div className="checkout-header-right-section">
@@ -61,6 +92,11 @@ export function CheckoutPage({ cart }) {
                                 return deliveryOption.id === cartItem.deliveryOptionId;
                             });
 
+                            const deleteCartItem = async () => {
+                                await axios.delete(`/api/cart-items/${cartItem.productId}`)
+                                await loadCart()
+                            }
+
                             return (
                                 <div key={cartItem.productId} className="cart-item-container">
                                     <div className="delivery-date">
@@ -79,13 +115,37 @@ export function CheckoutPage({ cart }) {
                                                 {formatMoney(cartItem.product.priceCents)}
                                             </div>
                                             <div className="product-quantity">
-                                                <span>
-                                                    Quantity: <span className="quantity-label">{cartItem.quantity}</span>
-                                                </span>
-                                                <span className="update-quantity-link link-primary">
-                                                    Update
-                                                </span>
-                                                <span className="delete-quantity-link link-primary">
+                                                {editingQuantities[cartItem.productId] ? (
+                                                    <>
+                                                        <select
+                                                            value={newQuantities[cartItem.productId]}
+                                                            onChange={(e) => handleQuantityChange(cartItem.productId, e.target.value)}
+                                                        >
+                                                            {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                                                                <option key={n} value={n}>{n}</option>
+                                                            ))}
+                                                        </select>
+                                                        <span
+                                                            className="update-quantity-link link-primary"
+                                                            onClick={() => handleQuantitySave(cartItem.productId)}
+                                                        >
+                                                            Save
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <span>
+                                                            Quantity: <span className="quantity-label">{cartItem.quantity}</span>
+                                                        </span>
+                                                        <span
+                                                            className="update-quantity-link link-primary"
+                                                            onClick={() => handleUpdateClick(cartItem)}
+                                                        >
+                                                            Update
+                                                        </span>
+                                                    </>
+                                                )}
+                                                <span className="delete-quantity-link link-primary" onClick={deleteCartItem}>
                                                     Delete
                                                 </span>
                                             </div>
@@ -108,11 +168,11 @@ export function CheckoutPage({ cart }) {
                                                         <input type="radio"
                                                             checked={delivaryOption.id === cartItem.deliveryOptionId}
                                                             className="delivery-option-input"
-                                                            name={`delivery-option-${cartItem.productId}`} />
+                                                            name={`delivery-option-${cartItem.productId}`}
+                                                            onChange={() => handleDeliveryOptionChange(cartItem.productId, delivaryOption.id)} />
                                                         <div>
                                                             <div className="delivery-option-date">
                                                                 {dayjs(delivaryOption.estimatedDeliveryTimeMs).format('dddd, MMMM D')}
-
                                                             </div>
                                                             <div className="delivery-option-price">
                                                                 {priceString}
@@ -121,7 +181,6 @@ export function CheckoutPage({ cart }) {
                                                     </div>
                                                 );
                                             })}
-
                                         </div>
                                     </div>
                                 </div>
@@ -172,13 +231,11 @@ export function CheckoutPage({ cart }) {
                                     </div>
                                 </div>
 
-                                <button className="place-order-button button-primary">
+                                <button className="place-order-button button-primary" onClick={placeOrder}>
                                     Place your order
                                 </button>
                             </>
                         )}
-
-
                     </div>
                 </div>
             </div>
