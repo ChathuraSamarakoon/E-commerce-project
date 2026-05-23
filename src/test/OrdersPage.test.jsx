@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import { MemoryRouter } from 'react-router'
 import { OrdersPage } from '../pages/OrdersPage'
@@ -33,7 +33,7 @@ vi.mock('axios', () => ({
 
 describe('OrdersPage', () => {
 
-  it('Your Orders title show වෙනවාද', async () => {
+  it('Show Your Orders title ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -43,7 +43,7 @@ describe('OrdersPage', () => {
     expect(title).toBeInTheDocument()
   })
 
-  it('Order ID show වෙනවාද', async () => {
+  it('Show Order ID ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -53,7 +53,7 @@ describe('OrdersPage', () => {
     expect(orderId).toBeInTheDocument()
   })
 
-  it('Product name show වෙනවාද', async () => {
+  it('Show Product name show', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -63,7 +63,7 @@ describe('OrdersPage', () => {
     expect(productName).toBeInTheDocument()
   })
 
-  it('Order placed date show වෙනවාද', async () => {
+  it('Show Order placed date ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -73,7 +73,7 @@ describe('OrdersPage', () => {
     expect(orderDate).toBeInTheDocument()
   })
 
-  it('Quantity show වෙනවාද', async () => {
+  it('Show Quantity ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -83,7 +83,7 @@ describe('OrdersPage', () => {
     expect(quantity).toBeInTheDocument()
   })
 
-  it('Track package button show වෙනවාද', async () => {
+  it('Show Track package button ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -93,7 +93,7 @@ describe('OrdersPage', () => {
     expect(trackBtn).toBeInTheDocument()
   })
 
-  it('Track package button correct link එකට යනවාද', async () => {
+  it('Track package button correct link ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
@@ -104,7 +104,7 @@ describe('OrdersPage', () => {
     expect(trackLink.getAttribute('href')).toContain('product-1')
   })
 
-  it('Add to Cart button show වෙනවාද', async () => {
+  it('Show Add to Cart button ', async () => {
     render(
       <MemoryRouter>
         <OrdersPage cart={[]} />
