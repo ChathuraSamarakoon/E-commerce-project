@@ -1,31 +1,47 @@
-import { useEffect ,useState} from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Header } from '../components/Header';
 import { formatMoney } from '../utils/money';
 import './HomePage.css'
 
-export function HomePage({cart}) {
-    const [products, setProducts]=useState([])
-    
+export function HomePage({ cart, loadCart }) {
+    const [products, setProducts] = useState([])
+    const [quantity, setQuantity] = useState(1)
+    const addToCart = async () => {
+        await axios.post('/api/cart-items', {
+            productId: products.id,
+            quantity: quantity
+
+        })
+        await loadCart();
+
+    }
+
+    const selectQuantity = (event) => {
+        const quantitySelected = Number(event.target.value)
+        setQuantity(quantitySelected)
+        console.log(quantitySelected)
+    }
+
 
     useEffect(() => {
         const getHomeData = async () => {
-        const response =await axios.get ('/api/products')
-        setProducts(response.data)
-        
+            const response = await axios.get('/api/products')
+            setProducts(response.data)
+
         }
         getHomeData();
-        
+
 
     }, [])
 
     return (
         <>
-            <Header cart={cart}/>
+            <Header cart={cart} />
 
 
             <div className="home-page">
-                <div className="products-grid">
+                <div className="products-grid" >
 
                     {products.map((products) => {
                         return (
@@ -52,7 +68,7 @@ export function HomePage({cart}) {
                                 </div>
 
                                 <div className="product-quantity-container">
-                                    <select>
+                                    <select quantity={quantity} onChange={ selectQuantity}>
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
@@ -73,7 +89,8 @@ export function HomePage({cart}) {
                                     Added
                                 </div>
 
-                                <button className="add-to-cart-button button-primary">
+                                <button className="add-to-cart-button button-primary"
+                                    onClick={addToCart}>
                                     Add to Cart
                                 </button>
                             </div>
